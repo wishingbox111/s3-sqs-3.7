@@ -1,3 +1,5 @@
+# from https://registry.terraform.io/providers/-/aws/latest/docs/resources/sqs_queue_policy
+
 locals {
     name_prefix = "enchen"
 }
@@ -9,7 +11,7 @@ data "aws_iam_policy_document" "queue" {
     effect = "Allow"
 
     principals {
-      type        = "Services" #original is : "*"
+      type        = "Service" #original is : "*"
       identifiers = ["s3.amazonaws.com"] #original is: ["*"]
     }
 
@@ -27,7 +29,7 @@ data "aws_iam_policy_document" "queue" {
 #doing the resources queue
 
 resource "aws_sqs_queue" "queue" {
-  name   = "s3-event-notification-queue"
+  name   = "enchen2-s3tosqs" # to add local.name_prefix and don't need to add the enchen here.
   policy = data.aws_iam_policy_document.queue.json # this depends policy document
 }
 
@@ -35,7 +37,7 @@ resource "aws_sqs_queue" "queue" {
 
 
 resource "aws_s3_bucket" "bucket" {
-  bucket = "enchen2-s3tosqs"
+  bucket = "${local.name_prefix}-trigger-bucket"
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
