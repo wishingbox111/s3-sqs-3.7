@@ -16,7 +16,7 @@ data "aws_iam_policy_document" "queue" {
     }
 
     actions   = ["sqs:SendMessage"]
-    resources = ["arn:aws:sqs:*:*:enchen2-s3tosqs"]#original code: ["arn:aws:sqs:*:*:s3-event-notification-queue"]
+    resources = ["arn:aws:sqs:*:*:${local.name_prefix}2-s3tosqs"] #original code: ["arn:aws:sqs:*:*:s3-event-notification-queue"]
 
     condition {
       test     = "ArnEquals"
@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "queue" {
 #doing the resources queue
 
 resource "aws_sqs_queue" "queue" {
-  name   = "enchen2-s3tosqs" # to add local.name_prefix and don't need to add the enchen here.
+  name   = "${local.name_prefix}2-s3tosqs" # to add local.name_prefix and don't need to add the enchen here.This is the name of SQS queue name.
   policy = data.aws_iam_policy_document.queue.json # this depends policy document
 }
 
@@ -37,7 +37,7 @@ resource "aws_sqs_queue" "queue" {
 
 
 resource "aws_s3_bucket" "bucket" {
-  bucket = "${local.name_prefix}-trigger-bucket"
+  bucket = "${local.name_prefix}-trigger-bucket" # bucket name created 
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
